@@ -1,79 +1,111 @@
+# Nexus Core — txAdmin deployment recipe
+#
+# Provisions a FiveM server with the Nexus Core framework.
+#
+# THIS RECIPE INSTALLS ONLY WHAT IS PUBLISHED. Nexus Core is in Phase 1 of
+# eleven. Framework resources are added to this recipe as each is released; a
+# recipe that referenced an unpublished repository would fail at deployment
+# while looking complete in review.
+#
+# See docs/coverage.md for exactly what is and is not installed.
+
 $engine: 3
+$minFxVersion: 7290
 $onesync: on
+$steamRequired: false
+
 name: Nexus Core
-version: 1.0.0
-author: Nexus Core Team
-description: A custom framework for FiveM including essential resources and custom scripts.
+version: 0.1.0
+author: The Nexus Core Framework team
+description: >-
+  A custom FiveM roleplay framework built around player experience, useful work,
+  meaningful ownership, and interconnected systems. Phase 1 — foundation only.
+  Not ready for production use.
 
 tasks:
-  # Download Base Files
+  # ---------------------------------------------------------------- structure
+  - action: ensure_dir
+    path: ./resources/[nexus]
+
+  - action: ensure_dir
+    path: ./resources/[nexus-deps]
+
+  # ------------------------------------------------------------- base payload
+  # Server configuration template and branding, pulled from this repository.
   - action: download_github
-    src: https://github.com/NC-Framework/NC_TXAdmin
+    src: https://github.com/NC-Framework/NXC_TXAdmin
     ref: main
-    dest: ./tmp/ncframework
+    dest: ./tmp/nxc_txadmin
 
   - action: move_path
-    src: ./tmp/ncframework/server.cfg
+    src: ./tmp/nxc_txadmin/data/server.cfg.template
     dest: ./server.cfg
 
   - action: move_path
-    src: ./tmp/ncframework/myLogo.png
+    src: ./tmp/nxc_txadmin/myLogo.png
     dest: ./myLogo.png
 
-  # Prepare Database
+  # ------------------------------------------------------------------ database
   - action: connect_database
-  - action: query_database
-    file: ./tmp/ncframework/ncframework.sql
 
-  # Standalone Dependencies
+  # Creates the migration-tracking table and nothing else. Every other table
+  # belongs to a resource domain, and each resource applies its own migrations
+  # at startup. A deployment recipe creating domain tables would be writing
+  # state it does not own.
+  - action: query_database
+    file: ./tmp/nxc_txadmin/data/schema/0001_bootstrap.sql
+
+  # -------------------------------------------------------------- CitizenFX
   - action: download_github
     src: https://github.com/citizenfx/cfx-server-data
+    ref: master
     subpath: resources
     dest: ./resources/[cfx-default]
 
+  # ------------------------------------------------------------- dependencies
+  # oxmysql is the approved database driver and a permanent framework
+  # dependency. Pinned to a release rather than a moving branch, so two
+  # deployments a week apart install the same code.
   - action: download_file
-    path: ./tmp/files/oxmysql.zip
+    path: ./tmp/oxmysql.zip
     url: https://github.com/overextended/oxmysql/releases/download/v2.9.1/oxmysql.zip
+
   - action: unzip
-    dest: ./resources/[standalone]
-    src: ./tmp/files/oxmysql.zip
+    src: ./tmp/oxmysql.zip
+    dest: ./resources/[nexus-deps]
 
-  - action: download_file
-    path: ./tmp/menuv.zip
-    url: https://github.com/ThymonA/menuv/releases/download/v1.4.1/menuv_v1.4.1.zip
-  - action: unzip
-    dest: ./resources/[standalone]/menuv
-    src: ./tmp/menuv.zip
-
-  # Download custom standalone resources
-  - action: download_github
-    dest: ./resources/[standalone]/screenshot-basic
-    ref: master
-    src: https://github.com/citizenfx/screenshot-basic
-
-  # Prevent GitHub throttling
   - action: waste_time
-    seconds: 10
+    seconds: 5
 
-  # VOICE
+  # Voice. Retained by decision: replacing pma-voice in early phases is an
+  # explicit non-goal, and nxc_voice will standardise over it rather than
+  # replace it.
   - action: download_github
-    dest: ./resources/[voice]/pma-voice
-    ref: main
     src: https://github.com/AvarianKnight/pma-voice
+    ref: main
+    dest: ./resources/[nexus-deps]/pma-voice
 
+  - action: download_github
+    src: https://github.com/citizenfx/screenshot-basic
+    ref: master
+    dest: ./resources/[nexus-deps]/screenshot-basic
 
-  # Download custom framework resources
- 
-  # Prevent GitHub throttling
   - action: waste_time
-    seconds: 10
+    seconds: 5
 
-  # Additional custom resources
-  
-  # Prevent GitHub throttling
-  - action: waste_time
-    seconds: 10
+  # ------------------------------------------------- Nexus Core framework
+  # nxc_lib — shared primitives. The root of the dependency graph.
+  - action: download_github
+    src: https://github.com/NC-Framework/nxc_lib
+    ref: main
+    dest: ./resources/[nexus]/nxc_lib
 
-  # Clean up
+  # The remaining foundation resources are scaffolded but not yet implemented.
+  # They are added here as each is released, in dependency order:
+  #   nxc_core -> nxc_config -> nxc_ui -> nxc_zones -> nxc_target
+  #   -> nxc_interact -> nxc_devtools
+  # They are deliberately absent rather than listed and broken.
+
+  # ---------------------------------------------------------------- clean up
   - action: remove_path
     path: ./tmp

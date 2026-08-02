@@ -1,35 +1,61 @@
 # Coverage
 
-What the recipe installs, as it currently stands.
+What this recipe does and does not do, as of version 0.1.0.
 
 ## Installs
 
-| Item | Source | Note |
+| Item | Source | Pinned |
 | --- | --- | --- |
-| Base files | `NC-Framework/NC_TXAdmin` | `server.cfg`, logo, and SQL — **see conformance note C-03** |
-| Database schema | `ncframework.sql` | **See conformance note C-05** |
-| CitizenFX defaults | `citizenfx/cfx-server-data` | Standard server resources |
-| `oxmysql` | Pinned release `v2.9.1` | The approved database driver. Pinning an exact release is correct |
-| `menuv` | Pinned release `v1.4.1` | **See conformance note C-04** |
-| `screenshot-basic` | `citizenfx/screenshot-basic` | Screenshot utility |
-| `pma-voice` | `AvarianKnight/pma-voice` | Retained by decision; replacing it early is an explicit non-goal |
+| Directory structure | — | `[nexus]` and `[nexus-deps]` groups |
+| `server.cfg` and logo | This repository | Branch `main` |
+| Migration-tracking table | `data/schema/0001_bootstrap.sql` | — |
+| CitizenFX defaults | `citizenfx/cfx-server-data` | Branch `master` |
+| `oxmysql` | Release `v2.9.1` | **Yes** |
+| `pma-voice` | `AvarianKnight/pma-voice` | Branch `main` |
+| `screenshot-basic` | `citizenfx/screenshot-basic` | Branch `master` |
+| `nxc_lib` | `NC-Framework/nxc_lib` | Branch `main` |
 
-## Does not install
+## Not installed
 
-**Any Nexus Core framework resource.** The recipe has placeholder sections for them
-("Download custom framework resources", "Additional custom resources") which are currently
-empty.
+Seven foundation resources: `nxc_core`, `nxc_config`, `nxc_ui`, `nxc_zones`,
+`nxc_target`, `nxc_interact`, `nxc_devtools`.
 
-`nxc_lib` is published and could be added. The remaining seven foundation resources are
-not published yet, and referencing an unpublished repository would fail at deployment
-while looking complete in review.
+Their repositories exist and are scaffolded, but the resources are **not implemented**.
+Installing an empty resource would produce a server that starts and does nothing, which
+is harder to diagnose than one where the resource is absent.
 
-## Throttling
+Each is added here as it is released.
 
-The recipe inserts `waste_time` pauses between download groups to avoid GitHub rate
-limiting. This is correct and should be preserved as resources are added.
+## Does not do
 
-## Cleanup
+| Not done | Why |
+| --- | --- |
+| Supply secrets | A recipe cannot know them, and a committed credential is a published one |
+| Create domain tables | Every table belongs to one resource domain; each resource applies its own migrations |
+| Configure gameplay | Operational configuration is registered by each resource and edited in game |
+| Install maps, vehicles, EUP, or clothing | Assets remain external dependencies, not rewritten or redistributed by this project |
+| Install a UI menu library | The approved UI stack is React and TypeScript through the shared design system |
 
-`./tmp` is removed at the end. Good — a deployment that leaves its scratch directory
-behind leaks whatever it downloaded there.
+## Pinning
+
+`oxmysql` is pinned to an exact release. Everything else currently tracks a moving branch,
+which means two deployments a week apart can install different code.
+
+That is acceptable during Phase 1, when nothing is stable anyway. **It stops being
+acceptable once a compatibility set exists**: a set names exact versions verified to work
+together, and a recipe that ignores them cannot deliver what the set promises.
+
+Recorded in ADR-0010 as an outstanding requirement.
+
+## Start order
+
+`server.cfg` lists resources in dependency order. The full foundation order is:
+
+```text
+oxmysql -> nxc_lib -> nxc_core -> nxc_config -> nxc_ui -> nxc_zones
+        -> nxc_target -> nxc_interact -> nxc_devtools
+```
+
+Only published resources appear. The order is maintained by hand today; once a
+compatibility set exists it should be generated from the dependency graph, because a
+hand-maintained order drifts and the drift is invisible until a resource fails to start.

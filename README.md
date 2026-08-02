@@ -10,38 +10,68 @@ txAdmin deployment recipe for **Nexus Core**.
 > ## Not ready for production
 >
 > Nexus Core is in **Phase 1** of eleven. One framework resource — `nxc_lib` — is
-> published. There is no character system, no inventory, no banking, and no gameplay.
+> published. There is no character system, no inventory, no banking, no jobs, and no
+> gameplay.
 >
 > This recipe exists so the deployment path is built alongside the framework rather than
-> bolted on at the end.
-
-## Contents
-
-| File | Purpose |
-| --- | --- |
-| `NexusCore.yml` | The txAdmin recipe |
-| `server.cfg` | Server configuration template, with txAdmin substitution tokens |
-| `ncframework.sql` | Database schema applied at deployment |
-| `myLogo.png` | Server logo |
-| `scripts/check-recipe.mjs` | Validation: repository references, credentials, attribution |
-| `docs/coverage.md` | What the recipe installs |
-| `docs/conformance.md` | **Where the recipe currently differs from the project standards** |
+> bolted on at the end. It is useful for development environments and nothing else.
 
 ## Using it
 
-In txAdmin, choose **Remote URL** during setup and supply the raw URL of the recipe:
+In txAdmin, choose **Remote URL** during setup and supply the raw recipe URL:
 
 ```text
 https://raw.githubusercontent.com/NC-Framework/NXC_TXAdmin/main/NexusCore.yml
 ```
 
+txAdmin prompts for database credentials and runs the recipe.
+
+## What it installs
+
+| Component | Source | Note |
+| --- | --- | --- |
+| CitizenFX defaults | `citizenfx/cfx-server-data` | Standard server resources |
+| `oxmysql` | Pinned release `v2.9.1` | The approved database driver |
+| `pma-voice` | `AvarianKnight/pma-voice` | Retained by decision |
+| `screenshot-basic` | `citizenfx/screenshot-basic` | Screenshot utility |
+| `nxc_lib` | `NC-Framework/nxc_lib` | Shared primitives |
+| Migration table | `data/schema/0001_bootstrap.sql` | **Only** the migration tracker |
+| `server.cfg` | `data/server.cfg.template` | Correct start order, blank operator values |
+
+Seven foundation resources — `nxc_core`, `nxc_config`, `nxc_ui`, `nxc_zones`,
+`nxc_target`, `nxc_interact`, `nxc_devtools` — are **not installed** because they are not
+yet implemented. See [`docs/coverage.md`](docs/coverage.md).
+
+## The schema creates one table
+
+Only `nxc_migrations`. Every other table belongs to a resource domain, and each resource
+applies its own migrations at startup.
+
+A deployment recipe that created `characters`, `accounts`, or `inventories` would be
+writing state it does not own, and its schema would drift from the owning resource's
+migrations with neither being authoritative.
+
 ## After deployment
 
-The recipe cannot supply secrets and does not try to. Fill in the database connection and
-your FiveM license key on the server.
+The recipe cannot supply secrets and does not try to. Open `server.cfg` and fill in every
+value marked **OPERATOR MUST SUPPLY**:
 
-**Never commit a filled-in configuration.** A credential in a repository is published, and
-rotation is the only remedy.
+| Value | Note |
+| --- | --- |
+| `mysql_connection_string` | Your database |
+| `nxc_token_signing_key` | Unique per environment; rotating invalidates live sessions |
+| `sv_licenseKey` | Supplied by txAdmin during setup |
+
+**Never commit a filled-in `server.cfg`.**
+
+## Configuration after deployment
+
+Almost nothing is configured by editing files. Operational values — business hours,
+payouts, prices, target locations, dispatch rules, feature flags — are registered by each
+resource and edited in game through a permission-controlled interface.
+
+Static configuration carries only bootstrap values: the database connection, environment
+identity, startup mode, log level, and the development-mode switch.
 
 ## Validation
 
@@ -49,13 +79,9 @@ rotation is the only remedy.
 npm run check
 ```
 
-Checks that every referenced repository is one this project publishes or has approved,
-that no committed file contains a real credential, and that attribution matches the
-project standard.
-
-**This check currently fails.** The differences are catalogued in
-[`docs/conformance.md`](docs/conformance.md) and are for the project owner to resolve —
-several are design decisions, not defects.
+Asserts that every referenced repository is one this project publishes or has approved,
+that every referenced file exists, that no committed file contains a credential, that
+operator values are blank, and that attribution matches the project standard.
 
 ## Licence
 
