@@ -156,6 +156,41 @@ if (existsSync(cfg)) {
   }
 }
 
+// --- 3c. downloaded resources must actually be started ---------------------
+//
+// Added after nxc_core was added to the recipe's download tasks and not to
+// server.cfg. It deployed perfectly, sat on disk, and never started — the
+// server reported no error, because from its point of view nothing was wrong.
+// A resource that is installed but not ensured is the quietest possible
+// failure: everything succeeds and the framework is simply absent.
+//
+// Only Nexus resources are checked. A dependency may legitimately be present
+// without being ensured, since another resource can start it.
+if (existsSync(cfg)) {
+  const template = readFileSync(cfg, 'utf8');
+  const ensured = new Set(
+    [...template.matchAll(/^\s*ensure\s+(\S+)/gm)].map((m) => m[1]),
+  );
+  const installed = [...recipe.matchAll(/dest:\s*\.\/resources\/\[nexus\]\/(\S+)/g)]
+    .map((m) => m[1].trim());
+  const orphans = installed.filter((r) => !ensured.has(r));
+  if (orphans.length) {
+    fail(`recipe installs ${orphans.join(', ')} but server.cfg never ensures `
+       + `${orphans.length === 1 ? 'it' : 'them'} — it would deploy cleanly and never run`);
+  } else if (installed.length) {
+    pass(`all ${installed.length} installed Nexus resources are ensured at startup`);
+  }
+
+  // Convars Enhanced does not implement. The server prints "Command not found"
+  // and continues, so this is only ever noticed by reading the startup log.
+  const LEGACY_CONVARS = ['sv_scriptHostBind'];
+  for (const convar of LEGACY_CONVARS) {
+    if (new RegExp(`^\\s*${convar}\\b`, 'mi').test(template)) {
+      fail(`server.cfg.template sets ${convar}, which does not exist on Enhanced`);
+    }
+  }
+}
+
 // --- 4. referenced local files ---------------------------------------------
 let missing = 0;
 for (const m of recipe.matchAll(/^\s*(?:file|src):\s*\.\/(.+)$/gm)) {

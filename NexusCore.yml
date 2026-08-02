@@ -146,11 +146,6 @@ tasks:
   #
   # nxc_voice targets the Enhanced server-side API directly. MDD v0.4 38.5,
   # conflict C-010, ADR-0017.
-  - action: download_github
-    src: https://github.com/citizenfx/screenshot-basic
-    ref: master
-    dest: ./resources/[nexus-deps]/screenshot-basic
-
   - action: waste_time
     seconds: 5
 

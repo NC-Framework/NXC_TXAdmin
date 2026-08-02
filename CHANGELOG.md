@@ -9,6 +9,21 @@ earlier iteration of the project that was never built.
 
 **Fixed**
 
+- **`nxc_core` was installed but never started.** It was added to the recipe's download
+  tasks without a matching `ensure` in `server.cfg`. The deployment reported success, the
+  files sat on disk, and the framework spine simply never ran — the quietest possible
+  failure, because from the server's point of view nothing was wrong. `check-recipe.mjs`
+  now fails when a Nexus resource is installed and not ensured.
+- **`sv_scriptHostBind` removed.** It does not exist on Enhanced, which rejects it at
+  startup with `Command not found (sv_scripthostbind)`. Carried over from a Legacy
+  template. Now checked for.
+- **`screenshot-basic` removed.** It ships unbuilt — its manifest declares `dist/client.js`,
+  `dist/server.js` and `dist/ui.html`, none of which are in the repository — and builds them
+  through the `yarn` resource from `cfx-server-data/[system]`, which is not part of the
+  Enhanced minimal set. Observed failing with `Dependency "yarn" failed to load`. Nothing in
+  Nexus Core uses it, so it goes rather than dragging in a build toolchain of unverified
+  Enhanced compatibility.
+
 - **The recipe would not deploy on an Enhanced server.** `$minFxVersion: 7290` rejected it
   with "this recipe requires FXServer v7290 or above". The Enhanced server is a separate
   artifact — renamed Cfx Server — that entered early access on 2026-07-21 with its own

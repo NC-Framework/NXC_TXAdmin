@@ -16,7 +16,10 @@ sets tags "roleplay, nexus core, custom framework"
 
 sv_maxclients {{maxClients}}
 sv_licenseKey "{{svLicense}}"
-sv_scriptHostBind "0.0.0.0"
+
+## sv_scriptHostBind is NOT set. It does not exist on Enhanced, which rejects it
+## at startup with "Command not found (sv_scripthostbind)". Carried over from a
+## Legacy template; removed 2026-08-02 after it was observed failing.
 
 set steam_webApiKey "none"
 
@@ -42,6 +45,15 @@ set steam_webApiKey "none"
 ##
 ## nxc_core refuses to start until this is set. That is deliberate — a value
 ## that is optional is a value that is empty on the one server where it matters.
+##
+## WHERE TO FIND IT: the server console prints it on the last line of startup,
+## and txAdmin shows it too:
+##
+##     fx: b106-ea/Win
+##          ^^^        build 106, early access, Windows
+##
+## Enter the number only. This is left BLANK on purpose: a template cannot know
+## which build you run, and a pre-filled value is one nobody would correct.
 set nxc_server_build ""
 
 ## ------------------------------------------------------------------ database
@@ -91,7 +103,16 @@ ensure mapmanager
 ensure spawnmanager
 
 ensure oxmysql
-ensure screenshot-basic
+
+## screenshot-basic is NOT installed. It ships unbuilt — its manifest declares
+## dist/client.js, dist/server.js and dist/ui.html, none of which exist in the
+## repository — and it builds them through the `yarn` resource, which lives in
+## cfx-server-data/[system] and is not part of the Enhanced minimal set.
+##
+## Observed failing on 2026-08-02: 'Dependency "yarn" failed to load'. Nothing in
+## Nexus Core uses it, so it is removed rather than dragged in along with a build
+## toolchain of unverified Enhanced compatibility. It returns when a resource
+## needs screenshots, with yarn and webpack installed deliberately.
 
 ## NO VOICE RESOURCE. pma-voice was removed on 2026-08-02.
 ##
@@ -109,3 +130,4 @@ ensure screenshot-basic
 ## Only published resources are listed. The rest are added as each is released.
 
 ensure nxc_lib
+ensure nxc_core
