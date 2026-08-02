@@ -63,6 +63,7 @@ if (!authorMatch) {
 // --- 3. referenced repositories --------------------------------------------
 const PUBLISHED = new Set([
   'NC-Framework/nxc_lib',
+  'NC-Framework/nxc_core',
   'NC-Framework/NXC_TXAdmin',
 ]);
 const APPROVED_EXTERNAL = new Set([
@@ -93,6 +94,28 @@ if (!bad) pass(`all ${unique.length} referenced repositories are published or ap
 const unpinned = [...recipe.matchAll(/ref:\s*(main|master)\s*$/gm)].length;
 if (unpinned) {
   warn(`${unpinned} download(s) track a moving branch rather than a pinned release`);
+}
+
+// --- 3b. platform ----------------------------------------------------------
+// Nexus Core targets GTA V Enhanced (ADR-0016). A recipe cannot verify which
+// artifacts the operator installed, but it can refuse to ship the one thing
+// that actively pinned Legacy.
+const cfg = resolve(root, 'data', 'server.cfg.template');
+if (existsSync(cfg)) {
+  const template = readFileSync(cfg, 'utf8');
+  const enforced = template.match(/^\s*sv_enforceGameBuild\s+(\d+)/m);
+  if (enforced) {
+    fail(`server.cfg.template pins sv_enforceGameBuild ${enforced[1]}. `
+       + 'Nexus Core targets GTA V Enhanced; a Legacy build must not be enforced (ADR-0016)');
+  } else {
+    pass('server.cfg.template enforces no game build');
+  }
+  if (!/^set nxc_server_build ""$/m.test(template)) {
+    fail('server.cfg.template must ask the operator to record nxc_server_build, '
+       + 'blank (MDD v0.4 38.2)');
+  } else {
+    pass('server.cfg.template records the deployed server build, blank for the operator');
+  }
 }
 
 // --- 4. referenced local files ---------------------------------------------

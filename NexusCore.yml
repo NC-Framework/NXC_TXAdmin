@@ -2,6 +2,18 @@
 #
 # Provisions a FiveM server with the Nexus Core framework.
 #
+# TARGETS GTA V ENHANCED. Nexus Core targets FiveM for GTA V Enhanced and the
+# Enhanced Cfx Server runtime (ADR-0016, MDD v0.4 section 38).
+#
+# A recipe cannot install or verify the server artifacts. txAdmin runs a recipe
+# on a server that already exists, so THE OPERATOR IS RESPONSIBLE for having
+# installed Enhanced Cfx Server artifacts before deploying this. Running it on
+# a Legacy FXServer will appear to succeed.
+#
+# What the recipe can do, and does: it no longer pins a Legacy game build, and
+# it requires the operator to record the exact server build in server.cfg, which
+# nxc_core validates at startup and refuses to run without.
+#
 # THIS RECIPE INSTALLS ONLY WHAT IS PUBLISHED. Nexus Core is in Phase 1 of
 # eleven. Framework resources are added to this recipe as each is released; a
 # recipe that referenced an unpublished repository would fail at deployment
@@ -77,9 +89,17 @@ tasks:
   - action: waste_time
     seconds: 5
 
-  # Voice. Retained by decision: replacing pma-voice in early phases is an
-  # explicit non-goal, and nxc_voice will standardise over it rather than
-  # replace it.
+  # Voice. TEMPORARY, with an end condition.
+  #
+  # This was previously retained on the strength of MDD v0.3, where replacing
+  # pma-voice early was a stated non-goal. v0.4 changed the reasoning: Enhanced
+  # ships a new Cfx voice implementation that replaces the Legacy Mumble
+  # integration, and the Mumble-compatible natives are deprecated. nxc_voice
+  # becomes a first-party abstraction over the Enhanced stack rather than a
+  # permanent wrapper around this (section 38.5, conflict C-010).
+  #
+  # It stays until nxc_voice exists. The disposition did not change; its reason
+  # and its expiry did.
   - action: download_github
     src: https://github.com/AvarianKnight/pma-voice
     ref: main
@@ -100,10 +120,16 @@ tasks:
     ref: main
     dest: ./resources/[nexus]/nxc_lib
 
+  # nxc_core — the framework spine.
+  - action: download_github
+    src: https://github.com/NC-Framework/nxc_core
+    ref: main
+    dest: ./resources/[nexus]/nxc_core
+
   # The remaining foundation resources are scaffolded but not yet implemented.
   # They are added here as each is released, in dependency order:
-  #   nxc_core -> nxc_config -> nxc_ui -> nxc_zones -> nxc_target
-  #   -> nxc_interact -> nxc_devtools
+  #   nxc_config -> nxc_ui -> nxc_zones -> nxc_target -> nxc_interact
+  #   -> nxc_devtools
   # They are deliberately absent rather than listed and broken.
 
   # ---------------------------------------------------------------- clean up

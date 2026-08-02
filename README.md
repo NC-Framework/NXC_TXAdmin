@@ -9,12 +9,28 @@ txAdmin deployment recipe for **Nexus Core**.
 
 > ## Not ready for production
 >
-> Nexus Core is in **Phase 1** of eleven. One framework resource — `nxc_lib` — is
-> published. There is no character system, no inventory, no banking, no jobs, and no
-> gameplay.
+> Nexus Core is in **Phase 1** of eleven. Two framework resources — `nxc_lib` and
+> `nxc_core` — are published. There is no character system, no inventory, no banking, no
+> jobs, and no gameplay.
 >
 > This recipe exists so the deployment path is built alongside the framework rather than
 > bolted on at the end. It is useful for development environments and nothing else.
+
+> ## Requires GTA V Enhanced
+>
+> Nexus Core targets **FiveM for GTA V Enhanced** and the Enhanced Cfx Server runtime.
+>
+> **This recipe cannot install or verify the server artifacts.** txAdmin runs a recipe on
+> a server that already exists, so having installed Enhanced Cfx Server artifacts is
+> yours to do. Deploying this onto a Legacy FXServer will appear to succeed.
+>
+> The recipe enforces no game build — the previous `sv_enforceGameBuild 3095` was a
+> Legacy build, and `check-recipe.mjs` now fails if it comes back. It also requires you to
+> record the exact server build in `server.cfg`; `nxc_core` refuses to start until you do,
+> so that a platform regression can be traced to a specific update rather than to whatever
+> changed most recently.
+>
+> See [`docs/coverage.md`](docs/coverage.md).
 
 ## Using it
 

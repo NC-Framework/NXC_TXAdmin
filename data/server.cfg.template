@@ -17,9 +17,32 @@ sets tags "roleplay, nexus core, custom framework"
 sv_maxclients {{maxClients}}
 sv_licenseKey "{{svLicense}}"
 sv_scriptHostBind "0.0.0.0"
-sv_enforceGameBuild 3095
 
 set steam_webApiKey "none"
+
+## ------------------------------------------------------------------ platform
+## Nexus Core targets FiveM for GTA V ENHANCED and the Enhanced Cfx Server
+## runtime. ADR-0016.
+##
+## THIS RECIPE CANNOT VERIFY WHICH ARTIFACTS YOU INSTALLED. A txAdmin recipe runs
+## on a server that already exists; it provisions resources and configuration,
+## not the server binary. Deploying this onto a Legacy FXServer will appear to
+## succeed and will not be supported.
+##
+## sv_enforceGameBuild is deliberately absent. It previously pinned 3095, a
+## Legacy build, which is how the Legacy default entered this project in the
+## first place — nobody chose it. If a build must be enforced on Enhanced, add
+## the line with an Enhanced build number; do not restore the old one.
+
+## OPERATOR MUST SUPPLY. The exact Cfx Server build this deployment runs.
+##
+## Required by MDD v0.4 section 38.2: every deployment records its build, so a
+## platform regression can be attributed to a specific update rather than to
+## whatever changed most recently. Enhanced is early access; this will happen.
+##
+## nxc_core refuses to start until this is set. That is deliberate — a value
+## that is optional is a value that is empty on the one server where it matters.
+set nxc_server_build ""
 
 ## ------------------------------------------------------------------ database
 ## OPERATOR MUST SUPPLY. Format:
@@ -55,7 +78,14 @@ set nxc_dev_mode "false"
 ## resource is available.
 
 ensure oxmysql
+
+## pma-voice is a TEMPORARY dependency with an end condition, not a permanent
+## one. MDD v0.4 section 38.5: Enhanced replaces the Legacy Mumble integration
+## with a new Cfx voice implementation, and the Mumble-compatible natives are
+## deprecated. nxc_voice will be a first-party abstraction over the Enhanced
+## stack; this stays until it exists.
 ensure pma-voice
+
 ensure screenshot-basic
 
 ## Nexus Core foundation. The full order is:
