@@ -24,11 +24,17 @@ txAdmin deployment recipe for **Nexus Core**.
 > a server that already exists, so having installed Enhanced Cfx Server artifacts is
 > yours to do. Deploying this onto a Legacy FXServer will appear to succeed.
 >
-> The recipe enforces no game build — the previous `sv_enforceGameBuild 3095` was a
-> Legacy build, and `check-recipe.mjs` now fails if it comes back. It also requires you to
-> record the exact server build in `server.cfg`; `nxc_core` refuses to start until you do,
-> so that a platform regression can be traced to a specific update rather than to whatever
-> changed most recently.
+> The recipe declares no `$minFxVersion` and enforces no game build. Both previously
+> carried Legacy-series values — `7290` and `3095` — and the first of those is what made
+> the recipe undeployable on Enhanced. `check-recipe.mjs` fails if either returns.
+>
+> It also requires you to record the exact server build in `server.cfg`; `nxc_core` refuses
+> to start until you do, so a platform regression can be traced to a specific update rather
+> than to whatever changed most recently.
+>
+> **No voice resource is installed.** Enhanced's voice API is server-side only, and
+> `pma-voice` wraps the deprecated client-side Mumble natives. `nxc_voice` will target the
+> Enhanced API directly.
 >
 > See [`docs/coverage.md`](docs/coverage.md).
 

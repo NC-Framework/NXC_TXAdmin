@@ -7,6 +7,29 @@ Entries are added only for genuinely user-visible or contract-relevant changes.
 Rewritten for the current Nexus Core architecture. The previous contents came from an
 earlier iteration of the project that was never built.
 
+**Fixed**
+
+- **The recipe would not deploy on an Enhanced server.** `$minFxVersion: 7290` rejected it
+  with "this recipe requires FXServer v7290 or above". The Enhanced server is a separate
+  artifact — renamed Cfx Server — that entered early access on 2026-07-21 with its own
+  build numbering, below the Legacy series `7290` belongs to, so no Enhanced server could
+  ever satisfy it. The key is removed, matching the official Enhanced reference recipe,
+  and `check-recipe.mjs` fails if it returns.
+- `$onesync` removed, matching the official Enhanced reference, which omits it where the
+  Legacy reference sets it.
+- CitizenFX resources are copied selectively rather than as a whole tree, again following
+  the Enhanced reference. Only `mapmanager` and `spawnmanager` are taken; `basic-gamemode`
+  and the demo maps are not, because Nexus Core is the gamemode.
+
+**Removed**
+
+- **`pma-voice`.** Enhanced's voice API is server-side only — the server owns channel
+  membership, mute, and deaf state — and Cfx's stated reason is that client-controlled
+  Mumble channels were a security problem. `pma-voice` wraps those client-side natives.
+  Installing it would put a client-authoritative subsystem inside a server-authoritative
+  framework, and nothing in Nexus Core uses voice yet, so there is no gap to cover.
+  ADR-0017.
+
 **Changed**
 
 - **Targets GTA V Enhanced.** `sv_enforceGameBuild 3095` — a Legacy build — was removed.

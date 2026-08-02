@@ -97,6 +97,44 @@ if (unpinned) {
 }
 
 // --- 3b. platform ----------------------------------------------------------
+// $minFxVersion must not come back.
+//
+// It read 7290 and made the recipe undeployable on Enhanced: "this recipe
+// requires FXServer v7290 or above". The Enhanced server is a separate artifact
+// — renamed Cfx Server — that entered early access on 2026-07-21 with its own
+// build numbering, below the Legacy series 7290 belongs to. No Enhanced server
+// can satisfy a Legacy-era minimum, so the failure is permanent rather than a
+// matter of updating.
+//
+// The official Enhanced reference recipe declares no minimum either. The right
+// place for a build floor is a manifest dependency, `/server:NNNN`, which the
+// server enforces per resource.
+const minFx = recipe.match(/^\$minFxVersion:\s*(\S+)/m);
+if (minFx) {
+  fail(`recipe declares $minFxVersion ${minFx[1]}. An Enhanced server cannot satisfy a `
+     + 'Legacy-era minimum — this is what broke deployment. Use a /server:NNNN manifest '
+     + 'dependency instead (ADR-0016, OD-020)');
+} else {
+  pass('recipe declares no $minFxVersion');
+}
+
+// A voice resource wrapping the deprecated client-side Mumble natives
+// contradicts server authority: Enhanced's voice API is server-side only.
+if (/pma-voice|mumble-voip|salty-?chat/i.test(recipe)) {
+  const commentedOut = recipe
+    .split(/\r?\n/)
+    .filter((l) => /pma-voice|mumble-voip|salty-?chat/i.test(l))
+    .every((l) => /^\s*#/.test(l));
+  if (!commentedOut) {
+    fail('recipe installs a client-authoritative voice resource. Enhanced voice is '
+       + 'server-side only; nxc_voice targets it directly (ADR-0017)');
+  } else {
+    pass('no client-authoritative voice resource is installed');
+  }
+} else {
+  pass('no client-authoritative voice resource is installed');
+}
+
 // Nexus Core targets GTA V Enhanced (ADR-0016). A recipe cannot verify which
 // artifacts the operator installed, but it can refuse to ship the one thing
 // that actively pinned Legacy.

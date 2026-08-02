@@ -21,9 +21,27 @@
 #
 # See docs/coverage.md for exactly what is and is not installed.
 
+# Metadata matches the OFFICIAL Enhanced reference recipe
+# (citizenfx/txAdmin-recipes, default-fivem-enhanced), which is the only
+# authoritative statement of what an Enhanced recipe may declare.
+#
+# $minFxVersion IS DELIBERATELY ABSENT. It previously read 7290, and that is what
+# broke deployment: "this recipe requires FXServer v7290 or above". The Enhanced
+# server is a SEPARATE artifact — renamed Cfx Server — that entered early access
+# on 2026-07-21 with its own build numbering, well below the Legacy series that
+# 7290 came from. A Legacy-era minimum can never be satisfied by an Enhanced
+# server, however new it is. The official Enhanced reference declares no minimum
+# either.
+#
+# The right guard is a manifest dependency, not recipe metadata: fxmanifest.lua
+# supports `dependencies { '/server:NNNN' }`. That is per-resource and enforced
+# by the server itself. It is not set yet because no build has been named
+# (OD-020, blocker B-11).
+#
+# $onesync is absent for the same reason: the official Enhanced reference omits
+# it while the Legacy reference sets it to `on`. Matching the reference rather
+# than reasoning about why.
 $engine: 3
-$minFxVersion: 7290
-$onesync: on
 $steamRequired: false
 
 name: Nexus Core
@@ -68,11 +86,30 @@ tasks:
     file: ./tmp/nxc_txadmin/data/schema/0001_bootstrap.sql
 
   # -------------------------------------------------------------- CitizenFX
+  # SELECTIVE, not the whole tree.
+  #
+  # The Legacy reference recipe drops all of cfx-server-data/resources into
+  # ./resources. The Enhanced reference recipe does not — it copies named
+  # resources one at a time. That difference is the reference telling us not
+  # everything in that repository is Enhanced-safe, so this follows the Enhanced
+  # pattern.
+  #
+  # Only two are taken. basic-gamemode and the demo maps are omitted because
+  # Nexus Core IS the gamemode; installing a demo one alongside it would be
+  # installing a second, conflicting answer to the same question.
   - action: download_github
     src: https://github.com/citizenfx/cfx-server-data
     ref: master
     subpath: resources
-    dest: ./resources/[cfx-default]
+    dest: ./tmp/cfx-server-data
+
+  - action: move_path
+    src: ./tmp/cfx-server-data/[managers]/mapmanager
+    dest: ./resources/[cfx-default]/mapmanager
+
+  - action: move_path
+    src: ./tmp/cfx-server-data/[managers]/spawnmanager
+    dest: ./resources/[cfx-default]/spawnmanager
 
   # ------------------------------------------------------------- dependencies
   # oxmysql is the approved database driver and a permanent framework
@@ -89,22 +126,26 @@ tasks:
   - action: waste_time
     seconds: 5
 
-  # Voice. TEMPORARY, with an end condition.
+  # NO VOICE RESOURCE IS INSTALLED. pma-voice was removed 2026-08-02.
   #
-  # This was previously retained on the strength of MDD v0.3, where replacing
-  # pma-voice early was a stated non-goal. v0.4 changed the reasoning: Enhanced
-  # ships a new Cfx voice implementation that replaces the Legacy Mumble
-  # integration, and the Mumble-compatible natives are deprecated. nxc_voice
-  # becomes a first-party abstraction over the Enhanced stack rather than a
-  # permanent wrapper around this (section 38.5, conflict C-010).
+  # This is a change of substance, not tidying. pma-voice is a wrapper over the
+  # CLIENT-SIDE Mumble natives. On Enhanced those natives are deprecated: they
+  # still function, but only by routing through the new voice implementation,
+  # and Cfx has said they will be removed.
   #
-  # It stays until nxc_voice exists. The disposition did not change; its reason
-  # and its expiry did.
-  - action: download_github
-    src: https://github.com/AvarianKnight/pma-voice
-    ref: main
-    dest: ./resources/[nexus-deps]/pma-voice
-
+  # The replacement is not a like-for-like one. Enhanced's voice API is
+  # SERVER-SIDE ONLY — CreateVoiceChannel, AddPlayerToVoiceChannel,
+  # SetPlayerMutedInVoiceChannel and so on — and the server owns channel
+  # membership, mute, and deaf state outright. Cfx's stated reason is that
+  # client-controlled Mumble channels were a security problem.
+  #
+  # That is the same rule this framework already enforces everywhere else:
+  # authority lives on the server. Installing a client-authoritative voice
+  # wrapper would contradict it, and nothing in Nexus Core uses voice yet, so
+  # there is nothing to keep working in the meantime.
+  #
+  # nxc_voice targets the Enhanced server-side API directly. MDD v0.4 38.5,
+  # conflict C-010, ADR-0017.
   - action: download_github
     src: https://github.com/citizenfx/screenshot-basic
     ref: master

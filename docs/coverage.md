@@ -9,9 +9,8 @@ What this recipe does and does not do, as of version 0.1.0.
 | Directory structure | — | `[nexus]` and `[nexus-deps]` groups |
 | `server.cfg` and logo | This repository | Branch `main` |
 | Migration-tracking table | `data/schema/0001_bootstrap.sql` | — |
-| CitizenFX defaults | `citizenfx/cfx-server-data` | Branch `master` |
+| `mapmanager`, `spawnmanager` | `citizenfx/cfx-server-data` | Branch `master` |
 | `oxmysql` | Release `v2.9.1` | **Yes** |
-| `pma-voice` | `AvarianKnight/pma-voice` | Branch `main` |
 | `screenshot-basic` | `citizenfx/screenshot-basic` | Branch `master` |
 | `nxc_lib` | `NC-Framework/nxc_lib` | Branch `main` |
 | `nxc_core` | `NC-Framework/nxc_core` | Branch `main` |
@@ -29,7 +28,10 @@ What the recipe does about the platform, given that limit:
 
 | Does | Detail |
 | --- | --- |
+| Declares no `$minFxVersion` | It read `7290`, a Legacy-series build, and **this is what broke deployment on Enhanced**. The Enhanced server is a separate artifact with its own numbering, so a Legacy minimum can never be met. `check-recipe.mjs` fails if it returns |
 | Enforces no game build | `sv_enforceGameBuild 3095` — a Legacy build — was removed. `check-recipe.mjs` fails if it returns |
+| Copies CitizenFX resources selectively | The official Enhanced reference recipe names resources one at a time instead of dropping the whole `cfx-server-data` tree in. Only `mapmanager` and `spawnmanager` are taken |
+| Installs no voice resource | Enhanced voice is server-side only. `pma-voice` wraps the deprecated client-side Mumble natives and was removed (ADR-0017) |
 | Requires the build be recorded | `set nxc_server_build ""` is blank and mandatory; `nxc_core` refuses to start until the operator fills it in (MDD v0.4 38.2) |
 | Marks `pma-voice` temporary | Enhanced replaces the Legacy Mumble integration. `pma-voice` stays only until `nxc_voice` exists (§38.5) |
 

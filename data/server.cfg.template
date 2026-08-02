@@ -73,20 +73,35 @@ set nxc_log_level "info"
 ## information-disclosure vulnerability.
 set nxc_dev_mode "false"
 
+## The PLATFORM's developer mode, which is a different thing from the line above.
+## nxc_dev_mode gates Nexus Core's own diagnostics; sv_devmode gates the Enhanced
+## client-side developer tooling, server-wide.
+##
+## Deliberately left commented out. Server-wide developer mode is subject to the
+## platform's player-slot limits and must never be enabled in production
+## (MDD v0.4 38.8). Enhanced can also grant it per player through
+## deferrals.handover, which is the better route for a shared development server.
+# set sv_devmode "true"
+
 ## ------------------------------------------------------------------- startup
 ## Resources start in dependency order. A resource must not assume a later
 ## resource is available.
 
+ensure mapmanager
+ensure spawnmanager
+
 ensure oxmysql
-
-## pma-voice is a TEMPORARY dependency with an end condition, not a permanent
-## one. MDD v0.4 section 38.5: Enhanced replaces the Legacy Mumble integration
-## with a new Cfx voice implementation, and the Mumble-compatible natives are
-## deprecated. nxc_voice will be a first-party abstraction over the Enhanced
-## stack; this stays until it exists.
-ensure pma-voice
-
 ensure screenshot-basic
+
+## NO VOICE RESOURCE. pma-voice was removed on 2026-08-02.
+##
+## Enhanced's voice API is server-side only: the server owns channel membership,
+## mute, and deaf state. pma-voice wraps the client-side Mumble natives, which
+## are deprecated on Enhanced and work only by routing through the new
+## implementation. A client-authoritative voice layer contradicts this
+## framework's server-authority rule, and nothing here uses voice yet.
+##
+## nxc_voice will target the Enhanced server-side API directly.
 
 ## Nexus Core foundation. The full order is:
 ##   nxc_lib -> nexus_core -> nxc_config -> nxc_ui -> nxc_zones -> nxc_target
