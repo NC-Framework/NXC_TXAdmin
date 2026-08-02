@@ -5,7 +5,22 @@
 ## Values marked OPERATOR MUST SUPPLY are blank on purpose. Fill them in on your
 ## server. Never commit a filled-in copy to a repository: a credential in a
 ## repository is published, and rotation is the only remedy.
+##
+## RE-RUNNING THE RECIPE DISCARDS EVERY EDIT YOU MAKE HERE.
+##
+## txAdmin deploys into a NEW data directory each time and regenerates this file
+## from the template. The previous directory, and everything you changed in it,
+## is gone. Observed on 2026-08-02: a changed listen port survived exactly until
+## the next deployment, and the symptom was the server list querying the old port
+## with nothing to say why.
+##
+## Before redeploying, keep a copy of at least: the endpoint ports below, the
+## database connection string, the token signing key, and nxc_server_build.
 
+## Listen ports. txAdmin fills these in at deployment, and they must match what
+## you have actually port-forwarded — the server list probes the address and port
+## the server registers, so a mismatch fails silently with a timeout rather than
+## anything that names the port.
 {{serverEndpoints}}
 
 sv_hostname "{{serverName}}"
