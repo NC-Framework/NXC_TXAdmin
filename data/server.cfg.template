@@ -88,8 +88,15 @@ set nxc_environment "development"
 ## Core startup mode: normal or recovery.
 set nxc_startup_mode "normal"
 
-## OPERATOR MUST SUPPLY. Signing key for session and NUI tokens.
-## Generate a unique value per environment. Rotating it invalidates live sessions.
+## LEAVE THIS BLANK. Nexus Core generates a signing key at every startup, using
+## the database's cryptographic random source, and rotates it by restarting.
+##
+## Restarting therefore invalidates live sessions. That is intended: a session
+## token that outlives the server which issued it is a token nobody can revoke.
+##
+## Set it only if you run more than one server instance that must share sessions.
+## A supplied key must be at least 32 characters; a shorter one is refused rather
+## than silently replaced.
 set nxc_token_signing_key ""
 
 ## Log level: debug, info, warn, error. debug is disabled in production.
