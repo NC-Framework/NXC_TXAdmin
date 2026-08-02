@@ -1,0 +1,12 @@
+{
+  "name": "nxc-txadmin",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "txAdmin deployment recipe for the Nexus Core framework.",
+  "author": "The Nexus Core Framework team",
+  "homepage": "https://nxcframework.net",
+  "scripts": {
+    "check": "node scripts/check-recipe.mjs"
+  }
+}

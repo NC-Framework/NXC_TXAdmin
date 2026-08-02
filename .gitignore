@@ -1,0 +1,11 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+tmp/
+
+# NOTE: server.cfg is deliberately NOT ignored here. In this repository it is a
+# deployment template with txAdmin substitution tokens, not a live server file.
