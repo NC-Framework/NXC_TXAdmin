@@ -152,7 +152,7 @@ tasks:
   # ------------------------------------------------- Nexus Core framework
   # PINNED TO A COMPATIBILITY SET, not to a branch.
   #
-  # These versions are nexus-core-2026.08.13, published in the governance
+  # These versions are nexus-core-2026.08.14, published in the governance
   # repository under releases/. `ref: main` is what made deployments
   # irreproducible: two operators deploying a week apart got different code and
   # no way to say which.
@@ -181,7 +181,7 @@ tasks:
   # opening their own, which is what keeps one NUI in the game client.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_ui
-    ref: v0.2.3
+    ref: v0.2.4
     dest: ./resources/[nexus]/nxc_ui
 
   # nxc_zones — spatial geometry. nxc_target depends on it.
