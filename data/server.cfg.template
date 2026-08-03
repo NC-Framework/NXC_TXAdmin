@@ -97,7 +97,13 @@ set nxc_startup_mode "normal"
 ## Set it only if you run more than one server instance that must share sessions.
 ## A supplied key must be at least 32 characters; a shorter one is refused rather
 ## than silently replaced.
-set nxc_token_signing_key ""
+## COMMENTED OUT ON PURPOSE. An absent convar and a blank one behave identically
+## — both generate a key — but only the blank one can be silently overridden by a
+## second blank `set` written below it on a redeploy, which is how an operator's
+## filled-in key was lost once already.
+##
+## Uncomment and fill in only for the multi-instance case.
+# set nxc_token_signing_key 
 
 ## Log level: debug, info, warn, error. debug is disabled in production.
 set nxc_log_level "info"
