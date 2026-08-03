@@ -166,3 +166,4 @@ ensure nxc_lib
 ensure nxc_core
 ensure nxc_config
 ensure nxc_ui
+ensure nxc_zones
