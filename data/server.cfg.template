@@ -107,6 +107,17 @@ set nxc_log_level "info"
 ## information-disclosure vulnerability.
 set nxc_dev_mode "false"
 
+## With nxc_dev_mode on, nxc_ui registers `/nxcui` — the only way to look at the
+## interface in game until nxc_devtools exists. Run `/nxcui list` for the
+## surfaces, and `/nxcui focus` to ask who holds focus, which is the one failure
+## that no log line will ever show you.
+##
+## The command is `restricted`, so it needs this ace as well as dev mode. Dev
+## mode is about the environment; the ace is about the person. A development
+## server with players on it is a normal thing, and neither gate implies the
+## other.
+add_ace group.admin command.nxcui allow
+
 ## The PLATFORM's developer mode, which is a different thing from the line above.
 ## nxc_dev_mode gates Nexus Core's own diagnostics; sv_devmode gates the Enhanced
 ## client-side developer tooling, server-wide.

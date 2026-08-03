@@ -181,7 +181,7 @@ tasks:
   # opening their own, which is what keeps one NUI in the game client.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_ui
-    ref: v0.1.0
+    ref: v0.2.0
     dest: ./resources/[nexus]/nxc_ui
 
   # The remaining foundation resources are scaffolded but not yet implemented.
