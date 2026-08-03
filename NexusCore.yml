@@ -152,7 +152,7 @@ tasks:
   # ------------------------------------------------- Nexus Core framework
   # PINNED TO A COMPATIBILITY SET, not to a branch.
   #
-  # These versions are nexus-core-2026.08.10, published in the governance
+  # These versions are nexus-core-2026.08.11, published in the governance
   # repository under releases/. `ref: main` is what made deployments
   # irreproducible: two operators deploying a week apart got different code and
   # no way to say which.
@@ -193,7 +193,7 @@ tasks:
   # nxc_target — the default interaction mechanism.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_target
-    ref: v0.1.2
+    ref: v0.1.3
     dest: ./resources/[nexus]/nxc_target
 
   # nxc_interact — interaction workflows.
