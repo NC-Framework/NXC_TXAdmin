@@ -123,6 +123,8 @@ set nxc_dev_mode "false"
 ## server with players on it is a normal thing, and neither gate implies the
 ## other.
 add_ace group.admin command.nxcui allow
+## Diagnostics and the demonstration zones, options, and workflows.
+add_ace group.admin command.nxc_devtools allow
 
 ## The PLATFORM's developer mode, which is a different thing from the line above.
 ## nxc_dev_mode gates Nexus Core's own diagnostics; sv_devmode gates the Enhanced
