@@ -152,7 +152,7 @@ tasks:
   # ------------------------------------------------- Nexus Core framework
   # PINNED TO A COMPATIBILITY SET, not to a branch.
   #
-  # These versions are nexus-core-2026.08.7, published in the governance
+  # These versions are nexus-core-2026.08.8, published in the governance
   # repository under releases/. `ref: main` is what made deployments
   # irreproducible: two operators deploying a week apart got different code and
   # no way to say which.
@@ -196,9 +196,14 @@ tasks:
     ref: v0.1.1
     dest: ./resources/[nexus]/nxc_target
 
-  # The remaining foundation resources are scaffolded but not yet implemented.
-  # They are added here as each is released, in dependency order:
-  #   nxc_interact -> nxc_devtools
+  # nxc_interact — interaction workflows.
+  - action: download_github
+    src: https://github.com/NC-Framework/nxc_interact
+    ref: v0.1.1
+    dest: ./resources/[nexus]/nxc_interact
+
+  # nxc_devtools is scaffolded but not yet implemented. It is added here when
+  # it is released.
   # They are deliberately absent rather than listed and broken.
 
   # ---------------------------------------------------------------- clean up
