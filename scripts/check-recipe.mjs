@@ -64,6 +64,7 @@ if (!authorMatch) {
 const PUBLISHED = new Set([
   'NC-Framework/nxc_lib',
   'NC-Framework/nxc_core',
+  'NC-Framework/nxc_config',
   'NC-Framework/NXC_TXAdmin',
 ]);
 const APPROVED_EXTERNAL = new Set([

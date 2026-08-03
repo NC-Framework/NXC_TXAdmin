@@ -153,3 +153,4 @@ ensure oxmysql
 
 ensure nxc_lib
 ensure nxc_core
+ensure nxc_config

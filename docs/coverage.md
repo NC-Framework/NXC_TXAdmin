@@ -12,8 +12,9 @@ What this recipe does and does not do, as of version 0.1.0.
 | `mapmanager`, `spawnmanager` | `citizenfx/cfx-server-data` | Branch `master` |
 | `oxmysql` | Release `v2.9.1` | **Yes** |
 | `screenshot-basic` | `citizenfx/screenshot-basic` | Branch `master` |
-| `nxc_lib` | `NC-Framework/nxc_lib` | Branch `main` |
-| `nxc_core` | `NC-Framework/nxc_core` | Branch `main` |
+| `nxc_lib` | `NC-Framework/nxc_lib` | Tag `v0.2.0` |
+| `nxc_core` | `NC-Framework/nxc_core` | Tag `v0.2.0` |
+| `nxc_config` | `NC-Framework/nxc_config` | Tag `v0.1.0` |
 
 ## Platform
 
@@ -43,7 +44,7 @@ What the recipe does about the platform, given that limit:
 
 ## Not installed
 
-Six foundation resources: `nxc_config`, `nxc_ui`, `nxc_zones`, `nxc_target`, `nxc_interact`,
+Five foundation resources: `nxc_ui`, `nxc_zones`, `nxc_target`, `nxc_interact`,
 `nxc_devtools`.
 
 Their repositories exist and are scaffolded, but the resources are **not implemented**.
