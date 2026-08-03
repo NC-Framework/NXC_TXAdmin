@@ -152,7 +152,7 @@ tasks:
   # ------------------------------------------------- Nexus Core framework
   # PINNED TO A COMPATIBILITY SET, not to a branch.
   #
-  # These versions are nexus-core-2026.08.2, published in the governance
+  # These versions are nexus-core-2026.08.3, published in the governance
   # repository under releases/. `ref: main` is what made deployments
   # irreproducible: two operators deploying a week apart got different code and
   # no way to say which.
@@ -162,7 +162,7 @@ tasks:
   # nxc_lib — shared primitives. The root of the dependency graph.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_lib
-    ref: v0.3.0
+    ref: v0.3.1
     dest: ./resources/[nexus]/nxc_lib
 
   # nxc_core — the framework spine.
@@ -177,9 +177,16 @@ tasks:
     ref: v0.1.1
     dest: ./resources/[nexus]/nxc_config
 
+  # nxc_ui — the single browser instance. Other resources message it rather than
+  # opening their own, which is what keeps one NUI in the game client.
+  - action: download_github
+    src: https://github.com/NC-Framework/nxc_ui
+    ref: v0.1.0
+    dest: ./resources/[nexus]/nxc_ui
+
   # The remaining foundation resources are scaffolded but not yet implemented.
   # They are added here as each is released, in dependency order:
-  #   nxc_ui -> nxc_zones -> nxc_target -> nxc_interact -> nxc_devtools
+  #   nxc_zones -> nxc_target -> nxc_interact -> nxc_devtools
   # They are deliberately absent rather than listed and broken.
 
   # ---------------------------------------------------------------- clean up
