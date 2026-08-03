@@ -150,16 +150,25 @@ tasks:
     seconds: 5
 
   # ------------------------------------------------- Nexus Core framework
+  # PINNED TO A COMPATIBILITY SET, not to a branch.
+  #
+  # These versions are nexus-core-2026.08-rc1, published in the governance
+  # repository under releases/. `ref: main` is what made deployments
+  # irreproducible: two operators deploying a week apart got different code and
+  # no way to say which.
+  #
+  # Changing a ref here without publishing a new set is what the set exists to
+  # prevent; check-compatibility-set.mjs fails on the mismatch.
   # nxc_lib — shared primitives. The root of the dependency graph.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_lib
-    ref: main
+    ref: v0.1.0-rc.1
     dest: ./resources/[nexus]/nxc_lib
 
   # nxc_core — the framework spine.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_core
-    ref: main
+    ref: v0.1.0-rc.1
     dest: ./resources/[nexus]/nxc_core
 
   # The remaining foundation resources are scaffolded but not yet implemented.
