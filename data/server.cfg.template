@@ -173,3 +173,4 @@ ensure nxc_core
 ensure nxc_config
 ensure nxc_ui
 ensure nxc_zones
+ensure nxc_target
