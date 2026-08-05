@@ -162,51 +162,51 @@ tasks:
   # nxc_lib — shared primitives. The root of the dependency graph.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_lib
-    ref: v0.4.0
+    ref: v0.5.0
     dest: ./resources/[nexus]/nxc_lib
 
   # nxc_core — the framework spine.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_core
-    ref: v0.3.0
+    ref: v0.4.0
     dest: ./resources/[nexus]/nxc_core
 
   # nxc_config — the configuration service every resource registers with.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_config
-    ref: v0.1.1
+    ref: v0.2.0
     dest: ./resources/[nexus]/nxc_config
 
   # nxc_ui — the single browser instance. Other resources message it rather than
   # opening their own, which is what keeps one NUI in the game client.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_ui
-    ref: v0.2.5
+    ref: v0.3.0
     dest: ./resources/[nexus]/nxc_ui
 
   # nxc_zones — spatial geometry. nxc_target depends on it.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_zones
-    ref: v0.1.1
+    ref: v0.2.0
     dest: ./resources/[nexus]/nxc_zones
 
   # nxc_target — the default interaction mechanism.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_target
-    ref: v0.1.5
+    ref: v0.2.0
     dest: ./resources/[nexus]/nxc_target
 
   # nxc_interact — interaction workflows.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_interact
-    ref: v0.1.1
+    ref: v0.2.0
     dest: ./resources/[nexus]/nxc_interact
 
   # nxc_devtools — diagnostics and the demonstrations. Registers nothing unless
   # nxc_dev_mode is on, so it is safe to install and inert by default.
   - action: download_github
     src: https://github.com/NC-Framework/nxc_devtools
-    ref: v0.1.0
+    ref: v0.2.0
     dest: ./resources/[nexus]/nxc_devtools
   # They are deliberately absent rather than listed and broken.
 
